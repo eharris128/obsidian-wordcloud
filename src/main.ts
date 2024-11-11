@@ -4,8 +4,51 @@ import { BlueskyTab } from '@/views/BlueskyTab';
 import { BLUESKY_TITLE, VIEW_TYPE_TAB } from '@/consts';
 import { setIcon } from "obsidian";
 
-const fs = Platform.isDesktop ? require('fs') : null;
-console.log("Platform.isDesktop", Platform.isDesktop);
+interface FileSystemOperations {
+    isWritable: () => Promise<boolean>;
+    writeFile: (path: string, data: string) => Promise<void>;
+    readFile: (path: string) => Promise<string>;
+}
+
+class DesktopFileSystem implements FileSystemOperations {
+    private fs: typeof import('fs');
+
+    constructor() {
+        this.fs = require('fs');
+    }
+
+    async isWritable(): Promise<boolean> {
+        try {
+            await this.fs.promises.access('.', this.fs.constants.W_OK);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    async writeFile(path: string, data: string): Promise<void> {
+        await this.fs.promises.writeFile(path, data, 'utf8');
+    }
+
+    async readFile(path: string): Promise<string> {
+        return await this.fs.promises.readFile(path, 'utf8');
+    }
+}
+
+class MobileFileSystem implements FileSystemOperations {
+    async isWritable(): Promise<boolean> {
+        return false;
+    }
+
+    async writeFile(path: string, data: string): Promise<void> {
+        throw new Error('Direct filesystem access not available on mobile');
+    }
+
+    async readFile(path: string): Promise<string> {
+        throw new Error('Direct filesystem access not available on mobile');
+    }
+}
+
 interface BlueskyPluginSettings {
     blueskyIdentifier: string;
     blueskyAppPassword: string;
@@ -18,17 +61,24 @@ const INITIAL_BLUESKY_SETTINGS: BlueskyPluginSettings = {
 
 export default class BlueskyPlugin extends Plugin {
     settings: BlueskyPluginSettings;
+    private fileSystem: FileSystemOperations;
+
+    constructor(app: App, manifest: any) {
+        super(app, manifest);
+        this.fileSystem = Platform.isDesktop 
+            ? new DesktopFileSystem()
+            : new MobileFileSystem();
+    }
 
     async activateBlueskyTab() {
         const { workspace } = this.app;
-        console.log('fs', fs);
-        if (fs) {
-            try {
-                fs.accessSync('.', fs.constants.W_OK);
-                console.log('File system is writable');
-            } catch (err) {
-                console.error('File system is not accessible:', err);
-            }
+        
+        // Check filesystem access
+        try {
+            const isWritable = await this.fileSystem.isWritable();
+            console.log('File system is writable:', isWritable);
+        } catch (err) {
+            console.error('File system check failed:', err);
         }
         
         const leaf = workspace.getLeaf(true);
@@ -77,6 +127,19 @@ export default class BlueskyPlugin extends Plugin {
         });
 
         this.addSettingTab(new BlueskySettingTab(this.app, this));
+    }
+
+    // Helper method to handle filesystem operations safely
+    async withFileSystem<T>(
+        operation: (fs: FileSystemOperations) => Promise<T>,
+        fallback: T
+    ): Promise<T> {
+        try {
+            return await operation(this.fileSystem);
+        } catch (error) {
+            console.error('Filesystem operation failed:', error);
+            return fallback;
+        }
     }
 
     async loadSettings() {
