@@ -1,0 +1,112 @@
+.bluesky-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 513.667px;
+    margin: 0 auto;
+}
+
+.bluesky-compose {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.bluesky-compose textarea {
+    font-size: 15px;
+    width: 100%;
+    max-width: 513.667px;
+    resize: vertical;
+    padding: 8px;
+    padding-right: 32px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+}
+
+.bluesky-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.bluesky-left-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.add-bluesky-thread-btn {
+    color: var(--text-muted);
+    padding: 4px 8px;
+    height: 32px;
+    line-height: 24px;
+}
+
+.bluesky-buttons button {
+    padding: 4px 12px;
+}
+
+.bluesky-post-btn {
+  margin-left: 8px;
+}
+
+.bluesky-char-counter {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+    padding-right: 4px;
+    margin-top: -4px;
+}
+
+.add-bluesky-thread-btn {
+    color: var(--text-muted);
+}
+
+.bluesky-post-btn {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-weight: 600;
+}
+
+.bluesky-post-btn:not(:disabled) {
+    background-color: var(--interactive-accent);
+}
+
+.bluesky-post-btn:not(:disabled):hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.bluesky-post-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--interactive-accent);
+}
+
+.add-bluesky-thread-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: var(--background-modifier-border);
+    color: var(--text-muted);
+}
+
+.bluesky-close-post {
+    position: absolute;
+    right: 12px;
+    top: 1px;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1;
+    transition: box-shadow 0.2s ease;
+    background: transparent !important;
+    box-shadow: none !important;
+    &:hover {
+        color: var(--text-error);
+    }
+}
