@@ -67,7 +67,7 @@ const INITIAL_BLUESKY_SETTINGS: BlueskyPluginSettings = {
 
 export default class BlueskyPlugin extends Plugin {
     settings: BlueskyPluginSettings;
-    private fileSystem: FileSystemOperations;
+    fileSystem: FileSystemOperations;
 
     constructor(app: App, manifest: any) {
         super(app, manifest);
@@ -98,10 +98,10 @@ export default class BlueskyPlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
-
+        const platform = Platform.isDesktop ? "desktop" : "mobile";
         this.addCommand({
             id: 'post-to-wordcloud',
-            name: 'Post highlighted text',
+            name: `Post highlighted text (${platform})`,
             editorCallback: async (editor: Editor) => {
                 const selectedText = editor.getSelection();
                 if (!selectedText) {
