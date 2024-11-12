@@ -8,6 +8,7 @@ interface FileSystemOperations {
     isWritable: () => Promise<boolean>;
     writeFile: (path: string, data: string) => Promise<void>;
     readFile: (path: string) => Promise<string>;
+    // exists: (path: string) => Promise<boolean>;
 }
 
 class DesktopFileSystem implements FileSystemOperations {
@@ -16,6 +17,11 @@ class DesktopFileSystem implements FileSystemOperations {
     constructor() {
         this.fs = require('fs');
     }
+
+
+    // async exists(path: string): Promise<boolean> {
+    //     return this.fs.existsSync(path);
+    // }
 
     async isWritable(): Promise<boolean> {
         try {
@@ -65,6 +71,7 @@ export default class BlueskyPlugin extends Plugin {
 
     constructor(app: App, manifest: any) {
         super(app, manifest);
+        console.log("constructing wordcloud filesystem", Platform.isDesktop)
         this.fileSystem = Platform.isDesktop 
             ? new DesktopFileSystem()
             : new MobileFileSystem();
