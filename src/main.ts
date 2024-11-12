@@ -101,7 +101,7 @@ export default class BlueskyPlugin extends Plugin {
         const platform = Platform.isDesktop ? "desktop" : "mobile";
         this.addCommand({
             id: 'post-to-wordcloud',
-            name: `Post highlighted text (${platform})`,
+            name: `Post woot highlighted text (${platform})`,
             editorCallback: async (editor: Editor) => {
                 const selectedText = editor.getSelection();
                 if (!selectedText) {
